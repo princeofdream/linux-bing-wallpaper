@@ -151,18 +151,24 @@ while true; do
     TOMORROW=$(date --date="tomorrow" +%Y-%m-%d)
     TOMORROW=$(date --date="$TOMORROW 00:10:00" +%s)
 
-    for picRes in _1920x1200 _1366x768 _1280x720 _1024x768; do
+    for picRes in _1920x1200 _1920x1080 _1366x768 _1280x720 _1024x768; do
 
     # Extract the relative URL of the Bing pic of the day from
     # the XML data retrieved from xmlURL, form the fully qualified
     # URL for the pic of the day, and store it in $picURL
     picURL=$bing$(echo $(curl -s $xmlURL) | grep -oP "<urlBase>(.*)</urlBase>" | cut -d ">" -f 2 | cut -d "<" -f 1)$picRes$picExt
+    picURL_1920x1080=$bing$(echo $(curl -s $xmlURL) | grep -oP "<urlBase>(.*)</urlBase>" | cut -d ">" -f 2 | cut -d "<" -f 1)"_1920x1080"$picExt
 
     # $picName contains the filename of the Bing pic of the day
-    picName=${picURL##*/}
+	picName_tmp=$(date "+%Y-%m-%d")
+    picName=$picName_tmp"_"${picURL##*/}
+    picName_1920x1080=$picName_tmp"_"${picURL_1920x1080##*/}
 
     # Download the Bing pic of the day
     curl -s -o $saveDir$picName -L $picURL
+	echo "curl -s -o $saveDir$picName -L $picURL"
+    curl -s -o $saveDir$picName_1920x1080 -L $picURL_1920x1080
+	echo "curl -s -o $saveDir$picName_1920x1080 -L $picURL_1920x1080"
 
     # Test if download was successful.
     downloadResult=$?
